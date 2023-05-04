@@ -36,7 +36,7 @@ from flora.pools.pool_wallet_info import (
     create_pool_state,
 )
 from flora.protocols.pool_protocol import POOL_PROTOCOL_VERSION
-from flora.server.ws_connection import WSChiaConnection
+from flora.server.ws_connection import WSFloraConnection
 from flora.types.announcement import Announcement
 from flora.types.blockchain_format.coin import Coin
 from flora.types.blockchain_format.program import Program
@@ -397,7 +397,7 @@ class PoolWallet:
     ) -> Tuple[TransactionRecord, bytes32, bytes32]:
         """
         A "plot NFT", or pool wallet, represents the idea of a set of plots that all pay to
-        the same pooling puzzle. This puzzle is a `chia singleton` that is
+        the same pooling puzzle. This puzzle is a `flora singleton` that is
         parameterized with a public key controlled by the user's wallet
         (a `smart coin`). It contains an inner puzzle that can switch between
         paying block rewards to a pool, or to a user's own wallet.
@@ -967,7 +967,7 @@ class PoolWallet:
     async def get_max_send_amount(self, records: Optional[Set[WalletCoinRecord]] = None) -> uint128:
         return uint128(0)
 
-    async def coin_added(self, coin: Coin, height: uint32, peer: WSChiaConnection) -> None:
+    async def coin_added(self, coin: Coin, height: uint32, peer: WSFloraConnection) -> None:
         pass
 
     async def select_coins(

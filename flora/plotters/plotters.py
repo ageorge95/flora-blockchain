@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from flora.plotters.bladebit import get_bladebit_install_info, plot_bladebit
-from flora.plotters.chiapos import get_chiapos_install_info, plot_chia
+from flora.plotters.chiapos import get_chiapos_install_info, plot_flora
 from flora.plotters.madmax import get_madmax_install_info, plot_madmax
 
 
@@ -51,7 +51,7 @@ class Options(Enum):
     BLADEBIT_NO_T2_DIRECT = 36
 
 
-chia_plotter_options = [
+flora_plotter_options = [
     Options.TMP_DIR,
     Options.TMP_DIR2,
     Options.K,
@@ -419,8 +419,8 @@ def build_parser(subparsers, root_path, option_list, name, plotter_desc):
 
 
 def call_plotters(root_path: Path, args):
-    # Add `plotters` section in CHIA_ROOT.
-    chia_root_path = root_path
+    # Add `plotters` section in FLORA_ROOT.
+    flora_root_path = root_path
     root_path = get_plotters_root_path(root_path)
     if not root_path.is_dir():
         if os.path.exists(root_path):
@@ -430,16 +430,16 @@ def call_plotters(root_path: Path, args):
                 print(f"Exception deleting old root path: {type(e)} {e}.")
 
     if not os.path.exists(root_path):
-        print(f"Creating plotters folder within CHIA_ROOT: {root_path}")
+        print(f"Creating plotters folder within FLORA_ROOT: {root_path}")
         try:
             os.mkdir(root_path)
         except Exception as e:
             print(f"Cannot create plotters root path {root_path} {type(e)} {e}.")
 
-    plotters = argparse.ArgumentParser("chia plotters", description="Available options.")
+    plotters = argparse.ArgumentParser("flora plotters", description="Available options.")
     subparsers = plotters.add_subparsers(help="Available options", dest="plotter")
 
-    build_parser(subparsers, root_path, chia_plotter_options, "chiapos", "Create a plot with the default chia plotter")
+    build_parser(subparsers, root_path, flora_plotter_options, "chiapos", "Create a plot with the default flora plotter")
     build_parser(subparsers, root_path, madmax_plotter_options, "madmax", "Create a plot with madMAx")
 
     bladebit_parser = subparsers.add_parser("bladebit", help="Create a plot with bladebit")
@@ -450,11 +450,11 @@ def call_plotters(root_path: Path, args):
     subparsers.add_parser("version", help="Show plotter versions")
 
     deprecation_warning = (
-        "[DEPRECATED] 'chia plotters install' is no longer available. Use install-plotter.sh/ps1 instead."
+        "[DEPRECATED] 'flora plotters install' is no longer available. Use install-plotter.sh/ps1 instead."
     )
     subparsers.add_parser("install", help=deprecation_warning, add_help=False)
 
-    deprecation_warning_bb2 = "[DEPRECATED] 'chia plotters bladebit2' was integrated to 'chia plotters bladebit'"
+    deprecation_warning_bb2 = "[DEPRECATED] 'flora plotters bladebit2' was integrated to 'flora plotters bladebit'"
     subparsers.add_parser("bladebit2", help=deprecation_warning_bb2, add_help=False)
 
     known_args = plotters.parse_known_args(args)
@@ -471,13 +471,13 @@ def call_plotters(root_path: Path, args):
     if args.plotter is None:
         plotters.print_help()
     elif args.plotter == "chiapos":
-        plot_chia(args, chia_root_path)
+        plot_flora(args, flora_root_path)
     elif args.plotter == "madmax":
-        plot_madmax(args, chia_root_path, root_path)
+        plot_madmax(args, flora_root_path, root_path)
     elif args.plotter == "bladebit":
-        plot_bladebit(args, chia_root_path, root_path)
+        plot_bladebit(args, flora_root_path, root_path)
     elif args.plotter == "version":
-        show_plotters_version(chia_root_path)
+        show_plotters_version(flora_root_path)
 
 
 def get_available_plotters(root_path) -> Dict[str, Any]:

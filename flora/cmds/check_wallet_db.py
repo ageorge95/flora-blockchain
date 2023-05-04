@@ -18,8 +18,8 @@ from flora.wallet.util.wallet_types import WalletType
 
 help_text = """
 \b
-    The purpose of this command is find potential issues in Chia wallet databases.
-    The core chia client currently uses sqlite to store the wallet databases, one database per key.
+    The purpose of this command is find potential issues in Flora wallet databases.
+    The core flora client currently uses sqlite to store the wallet databases, one database per key.
 \b
     Guide to warning diagnostics:
     ----------------------------

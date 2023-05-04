@@ -39,8 +39,8 @@ def get_ph_from_fingerprint(fingerprint: int, key_id: int = 1) -> bytes32:
     return puzzle_hash
 
 
-def create_chia_directory(
-    chia_root: Path,
+def create_flora_directory(
+    flora_root: Path,
     fingerprint: int,
     farming_address: Optional[str],
     plot_directory: Optional[str],
@@ -48,15 +48,15 @@ def create_chia_directory(
     docker_mode: bool,
 ) -> Dict[str, Any]:
     """
-    This function creates a new chia directory and returns a heavily modified config,
+    This function creates a new flora directory and returns a heavily modified config,
     suitable for use in the simulator.
     """
-    from flora.cmds.init_funcs import chia_init
+    from flora.cmds.init_funcs import flora_init
 
-    if not chia_root.is_dir() or not Path(chia_root / "config" / "config.yaml").exists():
-        # create chia directories & load config
-        chia_init(chia_root, testnet=True, fix_ssl_permissions=True)
-        config: Dict[str, Any] = load_config(chia_root, "config.yaml")
+    if not flora_root.is_dir() or not Path(flora_root / "config" / "config.yaml").exists():
+        # create flora directories & load config
+        flora_init(flora_root, testnet=True, fix_ssl_permissions=True)
+        config: Dict[str, Any] = load_config(flora_root, "config.yaml")
         # apply standard block-tools config.
         config["full_node"]["send_uncompact_interval"] = 0
         config["full_node"]["target_uncompact_proofs"] = 30
@@ -99,7 +99,7 @@ def create_chia_directory(
             config["self_hostname"] = "0.0.0.0"  # Bind to all interfaces.
             config["logging"]["log_stdout"] = True  # Log to console.
     else:
-        config = load_config(chia_root, "config.yaml")
+        config = load_config(flora_root, "config.yaml")
     # simulator overrides
     config["simulator"]["key_fingerprint"] = fingerprint
     if farming_address is None:
@@ -120,13 +120,13 @@ def create_chia_directory(
     simulator_consts["GENESIS_PRE_FARM_FARMER_PUZZLE_HASH"] = farming_ph.hex()
     simulator_consts["GENESIS_PRE_FARM_POOL_PUZZLE_HASH"] = farming_ph.hex()
     # save config and return the config
-    save_config(chia_root, "config.yaml", config)
+    save_config(flora_root, "config.yaml", config)
     return config
 
 
 def display_key_info(fingerprint: int, prefix: str) -> None:
     """
-    Display key info for a given fingerprint, similar to the output of `chia keys show`.
+    Display key info for a given fingerprint, similar to the output of `flora keys show`.
     """
     print(f"Using fingerprint {fingerprint}")
     private_key_and_seed = Keychain().get_private_key_by_fingerprint(fingerprint)
@@ -236,7 +236,7 @@ async def generate_plots(config: Dict[str, Any], root_path: Path, fingerprint: i
     from flora.simulator.start_simulator import PLOT_SIZE, PLOTS
 
     farming_puzzle_hash = decode_puzzle_hash(config["simulator"]["farming_address"])
-    os.environ["CHIA_ROOT"] = str(root_path)  # change env variable, to make it match what the daemon would set it to
+    os.environ["FLORA_ROOT"] = str(root_path)  # change env variable, to make it match what the daemon would set it to
 
     # create block tools and use local keychain
     bt = BlockTools(
@@ -279,9 +279,9 @@ async def async_config_wizard(
     if fingerprint is None:
         # user cancelled wizard
         return
-    # create chia directory & get config.
-    print("Creating chia directory & config...")
-    config = create_chia_directory(root_path, fingerprint, farming_address, plot_directory, auto_farm, docker_mode)
+    # create flora directory & get config.
+    print("Creating flora directory & config...")
+    config = create_flora_directory(root_path, fingerprint, farming_address, plot_directory, auto_farm, docker_mode)
     # Pre-generate plots by running block_tools init functions.
     print("Please Wait, Generating plots...")
     print("This may take up to a minute if you are on a slow machine")
@@ -293,7 +293,7 @@ async def async_config_wizard(
     print("Configuration Wizard Complete.")
     print("Starting Simulator now...\n\n")
 
-    sys.argv[0] = str(Path(sys.executable).parent / "chia")  # fix path for tests
+    sys.argv[0] = str(Path(sys.executable).parent / "flora")  # fix path for tests
     await async_start(root_path, config, ("simulator",), False)
 
     # now we make sure the simulator has a genesis block
@@ -310,7 +310,7 @@ async def async_config_wizard(
             else:
                 print("Genesis block already exists, exiting.")
             break
-    print(f"\nMake sure your CHIA_ROOT Environment Variable is set to: {root_path}")
+    print(f"\nMake sure your FLORA_ROOT Environment Variable is set to: {root_path}")
 
 
 def print_coin_record(
@@ -412,7 +412,7 @@ async def print_status(
                         "No fingerprint in config, either rerun 'cdv sim create' "
                         "or use --fingerprint to specify one, skipping key information."
                     )
-            # chain status ( basically chia show -s)
+            # chain status ( basically flora show -s)
             await print_blockchain_state(node_client, config)
             print("")
             # farming information
@@ -422,7 +422,7 @@ async def print_status(
             print(
                 f"Current Farming address: {encode_puzzle_hash(target_ph, prefix)}, "
                 f"with a balance of: "
-                f"{sum(coin_records.coin.amount for coin_records in farming_coin_records) / units['chia']} TXCH."
+                f"{sum(coin_records.coin.amount for coin_records in farming_coin_records) / units['flora']} TXFL."
             )
             if show_addresses:
                 print("All Addresses: ")

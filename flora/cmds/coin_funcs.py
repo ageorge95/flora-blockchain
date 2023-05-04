@@ -114,7 +114,7 @@ async def async_combine(args: Dict[str, Any], wallet_client: WalletRpcClient, fi
     target_coin_amount = Decimal(args["target_coin_amount"])
     target_coin_ids: List[bytes32] = [bytes32.from_hexstr(coin_id) for coin_id in args["target_coin_ids"]]
     largest = bool(args["largest"])
-    final_fee = uint64(int(Decimal(args["fee"]) * units["chia"]))
+    final_fee = uint64(int(Decimal(args["fee"]) * units["flora"]))
     if number_of_coins > 500:
         raise ValueError(f"{number_of_coins} coins is greater then the maximum limit of 500 coins.")
     try:
@@ -126,14 +126,14 @@ async def async_combine(args: Dict[str, Any], wallet_client: WalletRpcClient, fi
     if not await wallet_client.get_synced():
         print("Wallet not synced. Please wait.")
         return
-    is_xch: bool = wallet_type == WalletType.STANDARD_WALLET  # this lets us know if we are directly combining Chia
+    is_xfl: bool = wallet_type == WalletType.STANDARD_WALLET  # this lets us know if we are directly combining Flora
     final_max_amount = uint64(int(max_amount * mojo_per_unit)) if not target_coin_ids else uint64(0)
     final_min_coin_amount: uint64 = uint64(int(min_coin_amount * mojo_per_unit))
     final_excluded_amounts: List[uint64] = [uint64(int(Decimal(amount) * mojo_per_unit)) for amount in excluded_amounts]
     final_target_coin_amount = uint64(int(target_coin_amount * mojo_per_unit))
     if final_target_coin_amount != 0:  # if we have a set target, just use standard coin selection.
         removals: List[Coin] = await wallet_client.select_coins(
-            amount=(final_target_coin_amount + final_fee) if is_xch else final_target_coin_amount,
+            amount=(final_target_coin_amount + final_fee) if is_xfl else final_target_coin_amount,
             wallet_id=wallet_id,
             max_coin_amount=final_max_amount,
             min_coin_amount=final_min_coin_amount,
@@ -165,23 +165,23 @@ async def async_combine(args: Dict[str, Any], wallet_client: WalletRpcClient, fi
     if input("Would you like to Continue? (y/n): ") != "y":
         return
     total_amount: uint128 = uint128(sum(coin.amount for coin in removals))
-    if is_xch and total_amount - final_fee <= 0:
+    if is_xfl and total_amount - final_fee <= 0:
         print("Total amount is less than 0 after fee, exiting.")
         return
     target_ph: bytes32 = decode_puzzle_hash(await wallet_client.get_next_address(wallet_id, False))
-    additions = [{"amount": (total_amount - final_fee) if is_xch else total_amount, "puzzle_hash": target_ph}]
+    additions = [{"amount": (total_amount - final_fee) if is_xfl else total_amount, "puzzle_hash": target_ph}]
     transaction: TransactionRecord = await wallet_client.send_transaction_multi(
         wallet_id, additions, removals, final_fee
     )
     tx_id = transaction.name.hex()
     print(f"Transaction sent: {tx_id}")
-    print(f"To get status, use command: chia wallet get_transaction -f {fingerprint} -tx 0x{tx_id}")
+    print(f"To get status, use command: flora wallet get_transaction -f {fingerprint} -tx 0x{tx_id}")
 
 
 async def async_split(args: Dict[str, Any], wallet_client: WalletRpcClient, fingerprint: int) -> None:
     wallet_id: int = args["id"]
     number_of_coins = args["number_of_coins"]
-    final_fee = uint64(int(Decimal(args["fee"]) * units["chia"]))
+    final_fee = uint64(int(Decimal(args["fee"]) * units["flora"]))
     # new args
     amount_per_coin = Decimal(args["amount_per_coin"])
     target_coin_id: bytes32 = bytes32.from_hexstr(args["target_coin_id"])
@@ -197,10 +197,10 @@ async def async_split(args: Dict[str, Any], wallet_client: WalletRpcClient, fing
     if not await wallet_client.get_synced():
         print("Wallet not synced. Please wait.")
         return
-    is_xch: bool = wallet_type == WalletType.STANDARD_WALLET  # this lets us know if we are directly spitting Chia
+    is_xfl: bool = wallet_type == WalletType.STANDARD_WALLET  # this lets us know if we are directly spitting Flora
     final_amount_per_coin = uint64(int(amount_per_coin * mojo_per_unit))
     total_amount = final_amount_per_coin * number_of_coins
-    if is_xch:
+    if is_xfl:
         total_amount += final_fee
     # get full coin record from name, and validate information about it.
     removal_coin_record: CoinRecord = (await wallet_client.get_coin_records_by_names([target_coin_id]))[0]
@@ -221,4 +221,4 @@ async def async_split(args: Dict[str, Any], wallet_client: WalletRpcClient, fing
     )
     tx_id = transaction.name.hex()
     print(f"Transaction sent: {tx_id}")
-    print(f"To get status, use command: chia wallet get_transaction -f {fingerprint} -tx 0x{tx_id}")
+    print(f"To get status, use command: flora wallet get_transaction -f {fingerprint} -tx 0x{tx_id}")

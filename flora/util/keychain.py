@@ -28,8 +28,8 @@ from flora.util.keyring_wrapper import KeyringWrapper
 from flora.util.streamable import Streamable, streamable
 
 CURRENT_KEY_VERSION = "1.8"
-DEFAULT_USER = f"user-chia-{CURRENT_KEY_VERSION}"  # e.g. user-chia-1.8
-DEFAULT_SERVICE = f"chia-{DEFAULT_USER}"  # e.g. chia-user-chia-1.8
+DEFAULT_USER = f"user-flora-{CURRENT_KEY_VERSION}"  # e.g. user-flora-1.8
+DEFAULT_SERVICE = f"flora-{DEFAULT_USER}"  # e.g. flora-user-flora-1.8
 MAX_KEYS = 100
 MIN_PASSPHRASE_LEN = 8
 

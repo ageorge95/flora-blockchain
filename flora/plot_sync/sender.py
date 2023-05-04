@@ -25,7 +25,7 @@ from flora.protocols.harvester_protocol import (
 )
 from flora.protocols.protocol_message_types import ProtocolMessageTypes
 from flora.server.outbound_message import NodeType, make_msg
-from flora.server.ws_connection import WSChiaConnection
+from flora.server.ws_connection import WSFloraConnection
 from flora.util.generator_tools import list_to_batches
 from flora.util.ints import int16, uint32, uint64
 
@@ -90,7 +90,7 @@ class ExpectedResponse:
 
 class Sender:
     _plot_manager: PlotManager
-    _connection: Optional[WSChiaConnection]
+    _connection: Optional[WSFloraConnection]
     _sync_id: uint64
     _next_message_id: uint64
     _messages: List[MessageGenerator[PayloadType]]
@@ -133,7 +133,7 @@ class Sender:
         self._reset()
         self._stop_requested = False
 
-    def set_connection(self, connection: WSChiaConnection) -> None:
+    def set_connection(self, connection: WSFloraConnection) -> None:
         assert connection.connection_type is not None
         if connection.connection_type != NodeType.FARMER:
             raise InvalidConnectionTypeError(connection.connection_type, NodeType.HARVESTER)

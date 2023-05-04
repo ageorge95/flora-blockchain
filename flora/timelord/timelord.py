@@ -20,8 +20,8 @@ from flora.protocols import timelord_protocol
 from flora.protocols.protocol_message_types import ProtocolMessageTypes
 from flora.rpc.rpc_server import StateChangedProtocol, default_get_connections
 from flora.server.outbound_message import NodeType, make_msg
-from flora.server.server import ChiaServer
-from flora.server.ws_connection import WSChiaConnection
+from flora.server.server import FloraServer
+from flora.server.ws_connection import WSFloraConnection
 from flora.timelord.iters_from_block import iters_from_block
 from flora.timelord.timelord_state import LastState
 from flora.timelord.types import Chain, IterationType, StateType
@@ -66,7 +66,7 @@ def prove_bluebox_slow(payload):
 
 class Timelord:
     @property
-    def server(self) -> ChiaServer:
+    def server(self) -> FloraServer:
         # This is a stop gap until the class usage is refactored such the values of
         # integral attributes are known at creation of the instance.
         if self._server is None:
@@ -81,7 +81,7 @@ class Timelord:
         self._shut_down = False
         self.free_clients: List[Tuple[str, asyncio.StreamReader, asyncio.StreamWriter]] = []
         self.ip_whitelist = self.config["vdf_clients"]["ip"]
-        self._server: Optional[ChiaServer] = None
+        self._server: Optional[FloraServer] = None
         self.chain_type_to_stream: Dict[Chain, Tuple[str, asyncio.StreamReader, asyncio.StreamWriter]] = {}
         self.chain_start_time: Dict = {}
         # Chains that currently don't have a vdf_client.
@@ -165,7 +165,7 @@ class Timelord:
     def get_connections(self, request_node_type: Optional[NodeType]) -> List[Dict[str, Any]]:
         return default_get_connections(server=self.server, request_node_type=request_node_type)
 
-    async def on_connect(self, connection: WSChiaConnection):
+    async def on_connect(self, connection: WSFloraConnection):
         pass
 
     def get_vdf_server_port(self) -> Optional[uint16]:
@@ -192,7 +192,7 @@ class Timelord:
         if self.state_changed_callback is not None:
             self.state_changed_callback(change, change_data)
 
-    def set_server(self, server: ChiaServer):
+    def set_server(self, server: FloraServer):
         self._server = server
 
     async def _handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):

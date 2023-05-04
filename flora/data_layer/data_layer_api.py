@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 
 from flora.data_layer.data_layer import DataLayer
-from flora.server.server import ChiaServer
+from flora.server.server import FloraServer
 
 
 class DataLayerAPI:
@@ -16,7 +16,7 @@ class DataLayerAPI:
     #     self.full_node.state_changed_callback = callback
 
     @property
-    def server(self) -> ChiaServer:
+    def server(self) -> FloraServer:
         return self.data_layer.server
 
     @property

@@ -7,7 +7,7 @@ from flora.protocols.introducer_protocol import RequestPeersIntroducer, RespondP
 from flora.protocols.protocol_message_types import ProtocolMessageTypes
 from flora.rpc.rpc_server import StateChangedProtocol
 from flora.server.outbound_message import Message, make_msg
-from flora.server.ws_connection import WSChiaConnection
+from flora.server.ws_connection import WSFloraConnection
 from flora.types.peer_info import TimestampedPeerInfo
 from flora.util.api_decorators import api_request
 from flora.util.ints import uint64
@@ -26,7 +26,7 @@ class IntroducerAPI:
     async def request_peers_introducer(
         self,
         request: RequestPeersIntroducer,
-        peer: WSChiaConnection,
+        peer: WSFloraConnection,
     ) -> Optional[Message]:
         max_peers = self.introducer.max_peers_to_send
         if self.introducer.server is None or self.introducer.server.introducer_peers is None:

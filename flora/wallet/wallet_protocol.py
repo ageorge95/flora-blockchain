@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, List, Optional, Set
 from blspy import G1Element
 from typing_extensions import Protocol
 
-from flora.server.ws_connection import WSChiaConnection
+from flora.server.ws_connection import WSFloraConnection
 from flora.types.blockchain_format.coin import Coin
 from flora.types.blockchain_format.sized_bytes import bytes32
 from flora.util.ints import uint32, uint64, uint128
@@ -25,7 +25,7 @@ class WalletProtocol(Protocol):
     def id(self) -> uint32:
         ...
 
-    async def coin_added(self, coin: Coin, height: uint32, peer: WSChiaConnection) -> None:
+    async def coin_added(self, coin: Coin, height: uint32, peer: WSFloraConnection) -> None:
         ...
 
     async def select_coins(

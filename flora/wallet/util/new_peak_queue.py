@@ -6,7 +6,7 @@ from enum import IntEnum
 from typing import Any, List
 
 from flora.protocols.wallet_protocol import CoinStateUpdate, NewPeakWallet
-from flora.server.ws_connection import WSChiaConnection
+from flora.server.ws_connection import WSFloraConnection
 from flora.types.blockchain_format.sized_bytes import bytes32
 
 
@@ -65,11 +65,11 @@ class NewPeakQueue:
         self._pending_data_process_items += 1
         await self._inner_queue.put(NewPeakItem(NewPeakQueueTypes.PUZZLE_HASH_SUBSCRIPTION, puzzle_hashes))
 
-    async def full_node_state_updated(self, coin_state_update: CoinStateUpdate, peer: WSChiaConnection):
+    async def full_node_state_updated(self, coin_state_update: CoinStateUpdate, peer: WSFloraConnection):
         self._pending_data_process_items += 1
         await self._inner_queue.put(NewPeakItem(NewPeakQueueTypes.FULL_NODE_STATE_UPDATED, (coin_state_update, peer)))
 
-    async def new_peak_wallet(self, new_peak: NewPeakWallet, peer: WSChiaConnection):
+    async def new_peak_wallet(self, new_peak: NewPeakWallet, peer: WSFloraConnection):
         await self._inner_queue.put(NewPeakItem(NewPeakQueueTypes.NEW_PEAK_WALLET, (new_peak, peer)))
 
     async def get(self) -> NewPeakItem:

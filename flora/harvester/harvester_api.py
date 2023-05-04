@@ -15,7 +15,7 @@ from flora.protocols.farmer_protocol import FarmingInfo
 from flora.protocols.harvester_protocol import Plot, PlotSyncResponse
 from flora.protocols.protocol_message_types import ProtocolMessageTypes
 from flora.server.outbound_message import Message, make_msg
-from flora.server.ws_connection import WSChiaConnection
+from flora.server.ws_connection import WSFloraConnection
 from flora.types.blockchain_format.proof_of_space import (
     ProofOfSpace,
     calculate_pos_challenge,
@@ -36,7 +36,7 @@ class HarvesterAPI:
 
     @api_request(peer_required=True)
     async def harvester_handshake(
-        self, harvester_handshake: harvester_protocol.HarvesterHandshake, peer: WSChiaConnection
+        self, harvester_handshake: harvester_protocol.HarvesterHandshake, peer: WSFloraConnection
     ) -> None:
         """
         Handshake between the harvester and farmer. The harvester receives the pool public keys,
@@ -52,7 +52,7 @@ class HarvesterAPI:
 
     @api_request(peer_required=True)
     async def new_signage_point_harvester(
-        self, new_challenge: harvester_protocol.NewSignagePointHarvester, peer: WSChiaConnection
+        self, new_challenge: harvester_protocol.NewSignagePointHarvester, peer: WSFloraConnection
     ) -> None:
         """
         The harvester receives a new signage point from the farmer, this happens at the start of each slot.

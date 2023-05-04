@@ -3,15 +3,15 @@ from __future__ import annotations
 from typing import Awaitable, Callable, List
 
 from flora.consensus.blockchain_interface import BlockchainInterface
-from flora.server.ws_connection import WSChiaConnection
+from flora.server.ws_connection import WSFloraConnection
 from flora.util.ints import uint32
 
 
 async def check_fork_next_block(
     blockchain: BlockchainInterface,
     fork_point_height: uint32,
-    peers_with_peak: List[WSChiaConnection],
-    check_block_future: Callable[[WSChiaConnection, uint32, BlockchainInterface], Awaitable[bool]],
+    peers_with_peak: List[WSFloraConnection],
+    check_block_future: Callable[[WSFloraConnection, uint32, BlockchainInterface], Awaitable[bool]],
 ) -> uint32:
     our_peak_height = blockchain.get_peak_height()
     ses_heigths = blockchain.get_ses_heights()

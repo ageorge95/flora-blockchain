@@ -13,7 +13,7 @@ def keys_cmd(ctx: click.Context) -> None:
 
     root_path: Path = ctx.obj["root_path"]
     if not root_path.is_dir():
-        raise RuntimeError("Please initialize (or migrate) your config directory with chia init")
+        raise RuntimeError("Please initialize (or migrate) your config directory with flora init")
 
 
 @keys_cmd.command("generate", short_help="Generates and adds a key to keychain")
@@ -42,7 +42,7 @@ def generate_cmd(ctx: click.Context, label: Optional[str]) -> None:
     "--non-observer-derivation",
     "-d",
     help=(
-        "Show the first wallet address using non-observer derivation. Older Chia versions use "
+        "Show the first wallet address using non-observer derivation. Older Flora versions use "
         "non-observer derivation when generating wallet addresses."
     ),
     default=False,
@@ -342,7 +342,7 @@ def derive_cmd(ctx: click.Context, fingerprint: Optional[int], filename: Optiona
     "non-observer derivation should be used at that index. Example HD path: m/12381n/8444n/2/",
     type=str,
 )
-@click.option("--prefix", "-x", help="Address prefix (xch for mainnet, txch for testnet)", default=None, type=str)
+@click.option("--prefix", "-x", help="Address prefix (xfl for mainnet, txfl for testnet)", default=None, type=str)
 @click.pass_context
 def search_cmd(
     ctx: click.Context,
@@ -388,7 +388,7 @@ def search_cmd(
     "--index", "-i", help="Index of the first wallet address to derive. Index 0 is the first wallet address.", default=0
 )
 @click.option("--count", "-n", help="Number of wallet addresses to derive, starting at index.", default=1)
-@click.option("--prefix", "-x", help="Address prefix (xch for mainnet, txch for testnet)", default=None, type=str)
+@click.option("--prefix", "-x", help="Address prefix (xfl for mainnet, txfl for testnet)", default=None, type=str)
 @click.option(
     "--non-observer-derivation",
     "-d",

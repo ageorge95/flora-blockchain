@@ -29,7 +29,7 @@ from flora.protocols.harvester_protocol import (
 )
 from flora.protocols.protocol_message_types import ProtocolMessageTypes
 from flora.server.outbound_message import make_msg
-from flora.server.ws_connection import WSChiaConnection
+from flora.server.ws_connection import WSFloraConnection
 from flora.types.blockchain_format.sized_bytes import bytes32
 from flora.util.ints import int16, uint32, uint64
 from flora.util.misc import get_list_or_len
@@ -74,7 +74,7 @@ class ReceiverUpdateCallback(Protocol):
 
 
 class Receiver:
-    _connection: WSChiaConnection
+    _connection: WSFloraConnection
     _current_sync: Sync
     _last_sync: Sync
     _plots: Dict[str, Plot]
@@ -86,7 +86,7 @@ class Receiver:
 
     def __init__(
         self,
-        connection: WSChiaConnection,
+        connection: WSFloraConnection,
         update_callback: ReceiverUpdateCallback,
     ) -> None:
         self._connection = connection
@@ -115,7 +115,7 @@ class Receiver:
         self._duplicates.clear()
         self._total_plot_size = 0
 
-    def connection(self) -> WSChiaConnection:
+    def connection(self) -> WSFloraConnection:
         return self._connection
 
     def current_sync(self) -> Sync:

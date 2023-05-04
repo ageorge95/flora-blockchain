@@ -39,8 +39,8 @@ from flora.data_layer.download_data import insert_from_delta_file, write_files_f
 from flora.rpc.rpc_server import StateChangedProtocol, default_get_connections
 from flora.rpc.wallet_rpc_client import WalletRpcClient
 from flora.server.outbound_message import NodeType
-from flora.server.server import ChiaServer
-from flora.server.ws_connection import WSChiaConnection
+from flora.server.server import FloraServer
+from flora.server.ws_connection import WSFloraConnection
 from flora.types.blockchain_format.sized_bytes import bytes32
 from flora.util.ints import uint32, uint64
 from flora.util.path import path_from_root
@@ -72,12 +72,12 @@ class DataLayer:
     initialized: bool
     none_bytes: bytes32
     lock: asyncio.Lock
-    _server: Optional[ChiaServer]
+    _server: Optional[FloraServer]
     downloaders: List[str]
     uploaders: List[str]
 
     @property
-    def server(self) -> ChiaServer:
+    def server(self) -> FloraServer:
         # This is a stop gap until the class usage is refactored such the values of
         # integral attributes are known at creation of the instance.
         if self._server is None:
@@ -121,13 +121,13 @@ class DataLayer:
     def _set_state_changed_callback(self, callback: StateChangedProtocol) -> None:
         self.state_changed_callback = callback
 
-    async def on_connect(self, connection: WSChiaConnection) -> None:
+    async def on_connect(self, connection: WSFloraConnection) -> None:
         pass
 
     def get_connections(self, request_node_type: Optional[NodeType]) -> List[Dict[str, Any]]:
         return default_get_connections(server=self.server, request_node_type=request_node_type)
 
-    def set_server(self, server: ChiaServer) -> None:
+    def set_server(self, server: FloraServer) -> None:
         self._server = server
 
     async def _start(self) -> None:

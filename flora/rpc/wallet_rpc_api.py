@@ -16,7 +16,7 @@ from flora.protocols.protocol_message_types import ProtocolMessageTypes
 from flora.protocols.wallet_protocol import CoinState
 from flora.rpc.rpc_server import Endpoint, EndpointResult, default_get_connections
 from flora.server.outbound_message import NodeType, make_msg
-from flora.server.ws_connection import WSChiaConnection
+from flora.server.ws_connection import WSFloraConnection
 from flora.simulator.simulator_protocol import FarmNewBlockProtocol
 from flora.types.announcement import Announcement
 from flora.types.blockchain_format.coin import Coin, coin_as_list
@@ -90,7 +90,7 @@ class WalletRpcApi:
     def __init__(self, wallet_node: WalletNode):
         assert wallet_node is not None
         self.service = wallet_node
-        self.service_name = "chia_wallet"
+        self.service_name = "flora_wallet"
 
     def get_routes(self) -> Dict[str, Endpoint]:
         return {
@@ -267,7 +267,7 @@ class WalletRpcApi:
         )
 
     async def get_latest_singleton_coin_spend(
-        self, peer: WSChiaConnection, coin_id: bytes32, latest: bool = True
+        self, peer: WSFloraConnection, coin_id: bytes32, latest: bool = True
     ) -> Tuple[CoinSpend, CoinState]:
         coin_state_list: List[CoinState] = await self.service.wallet_state_manager.wallet_node.get_coin_state(
             [coin_id], peer=peer
@@ -428,8 +428,8 @@ class WalletRpcApi:
             return False, False
 
         config: Dict = load_config(new_root, "config.yaml")
-        farmer_target = config["farmer"].get("xch_target_address")
-        pool_target = config["pool"].get("xch_target_address")
+        farmer_target = config["farmer"].get("xfl_target_address")
+        pool_target = config["pool"].get("xfl_target_address")
         address_to_check: List[bytes32] = [decode_puzzle_hash(farmer_target), decode_puzzle_hash(pool_target)]
 
         found_addresses: Set[bytes32] = match_address_to_sk(sk, address_to_check, max_ph_to_search)
@@ -1233,7 +1233,7 @@ class WalletRpcApi:
         input_message: str = request["message"]
         signing_mode_str: Optional[str] = request.get("signing_mode")
         # Default to BLS_MESSAGE_AUGMENTATION_HEX_INPUT as this RPC was originally designed to verify
-        # signatures made by `chia keys sign`, which uses BLS_MESSAGE_AUGMENTATION_HEX_INPUT
+        # signatures made by `flora keys sign`, which uses BLS_MESSAGE_AUGMENTATION_HEX_INPUT
         if signing_mode_str is None:
             signing_mode = SigningMode.BLS_MESSAGE_AUGMENTATION_HEX_INPUT
         else:
@@ -1244,7 +1244,7 @@ class WalletRpcApi:
 
         if signing_mode == SigningMode.CHIP_0002:
             # CHIP-0002 message signatures are made over the tree hash of:
-            #   ("Chia Signed Message", message)
+            #   ("Flora Signed Message", message)
             message_to_verify: bytes = Program.to((CHIP_0002_SIGN_MESSAGE_PREFIX, input_message)).get_tree_hash()
         elif signing_mode == SigningMode.BLS_MESSAGE_AUGMENTATION_HEX_INPUT:
             # Message is expected to be a hex string
@@ -1706,7 +1706,7 @@ class WalletRpcApi:
         if cancel_all:
             asset_id = None
         else:
-            asset_id = request.get("asset_id", "xch")
+            asset_id = request.get("asset_id", "xfl")
 
         start: int = 0
         end: int = start + batch_size
@@ -1714,7 +1714,7 @@ class WalletRpcApi:
         log.info(f"Start cancelling offers for  {'asset_id: ' + asset_id if asset_id is not None else 'all'} ...")
         # Traverse offers page by page
         key = None
-        if asset_id is not None and asset_id != "xch":
+        if asset_id is not None and asset_id != "xfl":
             key = bytes32.from_hexstr(asset_id)
         while True:
             records: List[TradeRecord] = []
@@ -1823,7 +1823,7 @@ class WalletRpcApi:
         return {
             "success": True,
             "latest_coin": coin_state.coin.name().hex(),
-            "p2_address": encode_puzzle_hash(p2_puzzle.get_tree_hash(), AddressType.XCH.hrp(self.service.config)),
+            "p2_address": encode_puzzle_hash(p2_puzzle.get_tree_hash(), AddressType.XFL.hrp(self.service.config)),
             "public_key": public_key.as_python().hex(),
             "recovery_list_hash": recovery_list_hash.as_python().hex(),
             "num_verification": num_verification.as_int(),
@@ -2745,18 +2745,18 @@ class WalletRpcApi:
                 target_list.append(decode_puzzle_hash(target))
         mint_number_start = request.get("mint_number_start", 1)
         mint_total = request.get("mint_total", None)
-        xch_coin_list = request.get("xch_coins", None)
-        xch_coins = None
-        if xch_coin_list:
-            xch_coins = set([Coin.from_json_dict(xch_coin) for xch_coin in xch_coin_list])
-        xch_change_target = request.get("xch_change_target", None)
-        if xch_change_target is not None:
-            if xch_change_target[:2] == "xch":
-                xch_change_ph = decode_puzzle_hash(xch_change_target)
+        xfl_coin_list = request.get("xfl_coins", None)
+        xfl_coins = None
+        if xfl_coin_list:
+            xfl_coins = set([Coin.from_json_dict(xfl_coin) for xfl_coin in xfl_coin_list])
+        xfl_change_target = request.get("xfl_change_target", None)
+        if xfl_change_target is not None:
+            if xfl_change_target[:2] == "xfl":
+                xfl_change_ph = decode_puzzle_hash(xfl_change_target)
             else:
-                xch_change_ph = bytes32(hexstr_to_bytes(xch_change_target))
+                xfl_change_ph = bytes32(hexstr_to_bytes(xfl_change_target))
         else:
-            xch_change_ph = None
+            xfl_change_ph = None
         new_innerpuzhash = request.get("new_innerpuzhash", None)
         new_p2_puzhash = request.get("new_p2_puzhash", None)
         did_coin_dict = request.get("did_coin", None)
@@ -2777,8 +2777,8 @@ class WalletRpcApi:
                 mint_number_start=mint_number_start,
                 mint_total=mint_total,
                 target_list=target_list,
-                xch_coins=xch_coins,
-                xch_change_ph=xch_change_ph,
+                xfl_coins=xfl_coins,
+                xfl_change_ph=xfl_change_ph,
                 new_innerpuzhash=new_innerpuzhash,
                 new_p2_puzhash=new_p2_puzhash,
                 did_coin=did_coin,
@@ -2787,13 +2787,13 @@ class WalletRpcApi:
                 reuse_puzhash=request.get("reuse_puzhash", None),
             )
         else:
-            sb = await nft_wallet.mint_from_xch(
+            sb = await nft_wallet.mint_from_xfl(
                 metadata_list,
                 mint_number_start=mint_number_start,
                 mint_total=mint_total,
                 target_list=target_list,
-                xch_coins=xch_coins,
-                xch_change_ph=xch_change_ph,
+                xfl_coins=xfl_coins,
+                xfl_change_ph=xfl_change_ph,
                 fee=fee,
                 reuse_puzhash=request.get("reuse_puzhash", None),
             )

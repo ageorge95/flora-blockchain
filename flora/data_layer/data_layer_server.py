@@ -21,7 +21,7 @@ from flora.util.network import WebServer
 from flora.util.path import path_from_root
 from flora.util.setproctitle import setproctitle
 
-# from chia.cmds.chia import monkey_patch_click
+# from flora.cmds.flora import monkey_patch_click
 
 
 # See: https://bugs.python.org/issue29288

@@ -95,7 +95,7 @@ class NotificationManager:
             Program.to(None),
         )
         extra_spend_bundle = SpendBundle([notification_spend], G2Element())
-        chia_tx = await self.wallet_state_manager.main_wallet.generate_signed_transaction(
+        flora_tx = await self.wallet_state_manager.main_wallet.generate_signed_transaction(
             amount,
             notification_hash,
             fee,
@@ -105,6 +105,6 @@ class NotificationManager:
             memos=[target, msg],
         )
         full_tx: TransactionRecord = dataclasses.replace(
-            chia_tx, spend_bundle=SpendBundle.aggregate([chia_tx.spend_bundle, extra_spend_bundle])
+            flora_tx, spend_bundle=SpendBundle.aggregate([flora_tx.spend_bundle, extra_spend_bundle])
         )
         return full_tx

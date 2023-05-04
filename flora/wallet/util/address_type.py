@@ -8,13 +8,13 @@ from flora.util.config import selected_network_address_prefix
 
 
 class AddressType(Enum):
-    XCH = "xch"
+    XFL = "xfl"
     NFT = "nft"
-    DID = "did:chia:"
+    DID = "did:flora:"
 
     def hrp(self, config: Dict[str, Any]) -> str:
-        if self == AddressType.XCH:
-            # Special case to map XCH to the current network's address prefix
+        if self == AddressType.XFL:
+            # Special case to map XFL to the current network's address prefix
             return selected_network_address_prefix(config)
         return self.value
 

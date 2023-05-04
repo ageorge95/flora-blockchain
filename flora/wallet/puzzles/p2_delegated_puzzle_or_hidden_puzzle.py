@@ -15,7 +15,7 @@ This roughly corresponds to bitcoin's taproot.
 
 Note:
 
-p2_delegated_puzzle_or_hidden_puzzle is essentially the "standard coin" in chia.
+p2_delegated_puzzle_or_hidden_puzzle is essentially the "standard coin" in flora.
 DEFAULT_HIDDEN_PUZZLE_HASH from this puzzle is used with
 calculate_synthetic_secret_key in the wallet's standard pk_to_sk finder.
 
