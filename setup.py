@@ -90,7 +90,6 @@ kwargs = dict(
         legacy_keyring=legacy_keyring_dependencies,
     ),
     packages=[
-        "build_scripts",
         "chia",
         "chia.cmds",
         "chia.clvm",
