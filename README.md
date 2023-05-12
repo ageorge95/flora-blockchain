@@ -1,6 +1,6 @@
 # flora-blockchain
 
-# How to install the blockchain on Windows
+# How to install the blockchain on Windows (tested on Windows11Pro)
 
 ## Prerequisites:
 - git for windows: https://gitforwindows.org/
@@ -8,7 +8,7 @@
 
 ## Installation commands
 ```
-git clone https://github.com/ageorge95/flora-blockchain flora-blockchain
+git clone --progress --recursive -v https://github.com/ageorge95/flora-blockchain flora-blockchain
 cd flora-blockchain
 python -m venv venv
 cd venv/Scripts
@@ -16,6 +16,24 @@ activate
 python -m pip install --upgrade pip
 pip wheel --use-pep517  --use-deprecated=legacy-resolver --extra-index-url https://pypi.chia.net/simple/  -f . --wheel-dir=.\win_build ..\..\
 pip install --no-index --find-links=.\win_build\ flora-blockchain
+```
+
+# How to install the blockchain on Linux (tested on Ubuntu 22.04.02)
+
+## Prerequisites:
+- git: `sudo apt install git`
+- python venv: `sudo apt install python3-venv`
+
+## Installation commands
+```
+git clone --progress --recursive -v https://github.com/ageorge95/flora-blockchain flora-blockchain
+cd flora-blockchain
+python3 -m venv venv
+cd venv/bin
+. activate
+python -m pip install --upgrade pip
+pip wheel --use-pep517  --use-deprecated=legacy-resolver --extra-index-url https://pypi.chia.net/simple/  -f . --wheel-dir=.win_build ../../
+pip install --no-index --find-links=.win_build flora-blockchain
 ```
 
 # Support
